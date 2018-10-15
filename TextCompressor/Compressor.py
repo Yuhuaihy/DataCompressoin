@@ -68,7 +68,7 @@ def NC_compressor(data, dictionary, deletion):
     
 
 
-class Compressor:
+class Compressor(self):
 
     def __init__(self,filepath, method = 'FC', deletion = 'FREEZE', data = None, outpath = 'results'):
         try:
