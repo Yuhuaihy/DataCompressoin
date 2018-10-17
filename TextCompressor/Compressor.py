@@ -24,83 +24,112 @@ def update_dict(dictionary, key, deletion):
     elif deletion == 'LRU':
         deletion_LRU()
 
+def update_dict_decompress(dictionary, value, deletion):
+    if value in dictionary.values():
+        return 
+    n = len(dictionary)
+    if len(dictionary) < DICT_SIZE:
+        dictionary[n] = value
+        return
+    if deletion == 'FREEZE':
+        deletion_freeze()
+    elif deletion == 'RESTART':
+        deletion_restart()
+    elif deletion == 'LRU':
+        deletion_LRU()
+    
 
 
-def FC_compressor(data, dictionary, deletion):
-    prev = ''
+
+
+def compressor(data, dictionary,update_method, deletion):
     n = len(data)
     compress_result = []
     head = 0
     tail = 1
+    prev = ''
     while tail <= n:
-        cur_len = len(dictionary)
         while data[head:tail] in dictionary and tail <= n:
             tail += 1
         current_match = data[head:tail-1]
         compress_result.append(dictionary[current_match])
-        update = prev + current_match[0]
+        if update_method == 'FC':
+            update = prev + current_match[0]
+        elif update_method == 'CM':
+            update = prev + current_match
+        else:
+            print('Sorry %s is not supported'%update_method)
+            return None
         update_dict(dictionary, update, deletion)
-        
         prev = current_match
         head = tail -1
         tail = head + 1
+    
     return compress_result
 
 
+def decompressor(code, dictionary, update_method, deletion):
+    decompress_result = ""
+    prev = ""
+    for num in code:
+        current = dictionary[num]
+        decompress_result += current
+        if update_method == 'FC':
+            update = prev + current[0]
+        elif update_method == 'CM':
+            update = prev + current
+        else:
+            print('Sorry %s is not supported'%update_method)
+            return None
+        update_dict_decompress(dictionary, update, deletion)
+        prev = current
+        
+    return decompress_result
 
-def NC_compressor(data, dictionary, deletion):
-    n = len(data)
-    compress_result = []
-    head = 0
-    tail = 1
-    while tail <= n:
-        cur_len = len(dictionary)
-        while data[head:tail] in dictionary and tail <= n:
-            tail += 1
-        current_match = data[head:tail-1]
-        compress_result.append(dictionary[current_match])
-        update = current_match + data[tail-1] if tail -1 < n else current_match
-        update_dict(dictionary, update, deletion)
-        head = tail -1
-        tail = head + 1
-    return compress_result
+
+
+
 
     
 
 
-class Compressor(self):
+class Compressor():
 
     def __init__(self,filepath, method = 'FC', deletion = 'FREEZE', data = None, outpath = 'results'):
         try:
             with open(filepath,'r') as f:
-                self.datasetname = filepath.rsplit('/',1)[-1]
+                self.datasetname = filepath.rsplit('/',1)[-1].split('.')[0]
                 self.data = f.read()
         except IOError:
             print("File is not accessible.")
         if data:
             self.data = data
-        characters = set(self.data)
-        self.dictionary = dict(zip(characters, range(len(characters))))
+
         self.method = method
         self.deletion = deletion
         self.outpath = outpath
     
     def compress(self):
-        if self.method == 'FC':
-            self.compress_result = FC_compressor(self.data, self.dictionary, self.deletion)
-        elif self.method == 'NC':
-            self.compress_result = NC_compressor(self.data, self.dictionary, self.deletion)
-        else:
-            print('Sorry %d is not supported'%self.method)
-
+        dictionary = dict((chr(x), x) for x in range(128))
+        self.compress_result = compressor(self.data, dictionary, self.method, self.deletion)
+               
     def decompress(self):
-        pass
+        dictionary = dict((x,chr(x)) for x in range(128))
+        self.decompress_result = decompressor(self.compress_result, dictionary, self.method, self.deletion)
+        print("The decompression result of %s update and %s deletion equals the origin text: "%(self.method,self.deletion),self.decompress_result == self.data)
 
     def export_compress_result(self):
-        filename = self.datasetname + '-' + str(round(time.time())) + '.txt'
+        filename = self.datasetname + '-encode-' + str(round(time.time())) + '.txt'
         path = os.path.join(self.outpath,filename)
         with open(path, 'w') as f:
             f.write(str(self.compress_result))
+    
+    def export_decompress_result(self):
+        filename = self.datasetname + '-decode-' + str(round(time.time())) + '.txt'
+        path = os.path.join(self.outpath,filename)
+        with open(path, 'w') as f:
+            f.write(str(self.decompress_result))
+
             
 
 
