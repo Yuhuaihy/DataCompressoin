@@ -6,9 +6,14 @@ DICT_SIZE = 65536
 def deletion_freeze():
     pass
 
-def deletion_restart(dict):
-    pass
-def deletion_LRU(dict):
+def deletion_restart(d, process):
+    if process == 'compress':
+        d = dict((chr(x), x) for x in range(128))
+    else:
+        d = dict((x,chr(x)) for x in range(128))
+    return d
+    
+def deletion_LRU(d):
     pass
 
 def update_dict(dictionary, key, deletion):
@@ -20,7 +25,7 @@ def update_dict(dictionary, key, deletion):
     if deletion == 'FREEZE':
         deletion_freeze()
     elif deletion == 'RESTART':
-        deletion_restart()
+        dictionary = deletion_restart(dictionary, 'compress')
     elif deletion == 'LRU':
         deletion_LRU()
 
@@ -34,7 +39,7 @@ def update_dict_decompress(dictionary, value, deletion):
     if deletion == 'FREEZE':
         deletion_freeze()
     elif deletion == 'RESTART':
-        deletion_restart()
+        dictionary = deletion_restart(dictionary, 'decompress')
     elif deletion == 'LRU':
         deletion_LRU()
     
