@@ -18,30 +18,35 @@ def deletion_LRU(d):
 
 def update_dict(dictionary, key, deletion):
     if key in dictionary:
-        return
+        return dictionary
     if len(dictionary) < DICT_SIZE:
         dictionary[key] = len(dictionary)
-        return 
+        return dictionary
     if deletion == 'FREEZE':
-        deletion_freeze()
+        return dictionary
     elif deletion == 'RESTART':
+        print('=====Dictionary updated!======')
         dictionary = deletion_restart(dictionary, 'compress')
     elif deletion == 'LRU':
         deletion_LRU()
+    
+    return dictionary
 
 def update_dict_decompress(dictionary, value, deletion):
     if value in dictionary.values():
-        return 
+        return dictionary
     n = len(dictionary)
     if len(dictionary) < DICT_SIZE:
         dictionary[n] = value
-        return
+        return dictionary
     if deletion == 'FREEZE':
         deletion_freeze()
     elif deletion == 'RESTART':
+        print('=====Dictionary updated!======')
         dictionary = deletion_restart(dictionary, 'decompress')
     elif deletion == 'LRU':
         deletion_LRU()
+    return dictionary
     
 
 
@@ -65,7 +70,7 @@ def compressor(data, dictionary,update_method, deletion):
         else:
             print('Sorry %s is not supported'%update_method)
             return None
-        update_dict(dictionary, update, deletion)
+        dictionary = update_dict(dictionary, update, deletion)
         prev = current_match
         head = tail -1
         tail = head + 1
@@ -76,6 +81,9 @@ def compressor(data, dictionary,update_method, deletion):
 def decompressor(code, dictionary, update_method, deletion):
     decompress_result = ""
     prev = ""
+    # n = len(code)
+    # idx = 0
+    # each = n//5
     for num in code:
         current = dictionary[num]
         decompress_result += current
@@ -86,8 +94,11 @@ def decompressor(code, dictionary, update_method, deletion):
         else:
             print('Sorry %s is not supported'%update_method)
             return None
-        update_dict_decompress(dictionary, update, deletion)
+        dictionary = update_dict_decompress(dictionary, update, deletion)
         prev = current
+        # idx += 1
+        # if idx%each == 0:
+        #     embed()
         
     return decompress_result
 
@@ -117,7 +128,7 @@ class Compressor():
     def compress(self):
         dictionary = dict((chr(x), x) for x in range(128))
         self.compress_result = compressor(self.data, dictionary, self.method, self.deletion)
-               
+
     def decompress(self):
         dictionary = dict((x,chr(x)) for x in range(128))
         self.decompress_result = decompressor(self.compress_result, dictionary, self.method, self.deletion)
