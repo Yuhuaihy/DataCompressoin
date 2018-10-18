@@ -20,10 +20,10 @@ filepath = 'testfiles/news.txt'
 # compressor2.decompress()
 
 
-# compressor = Compressor(filepath, method='CM')
-# compressor.compress()
-# #compressor.export_compress_result()
-# compressor.decompress()
+compressor = Compressor(filepath, method='CM')
+compressor.compress()
+#compressor.export_compress_result()
+compressor.decompress()
 
 
 compressor2 = Compressor(filepath, method='FC', deletion= 'RESTART')
