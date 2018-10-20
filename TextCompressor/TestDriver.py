@@ -9,15 +9,15 @@ filepath = 'testfiles/news.txt'
 # compressor2.decompress()
 
 
-# compressor = Compressor(filepath, method='CM')
-# compressor.compress()
-# compressor.export_compress_result()
-# compressor.decompress()
+compressor = Compressor(filepath, method='CM')
+compressor.compress()
+compressor.export_compress_result()
+compressor.decompress()
 
 
-# compressor2 = Compressor(filepath, method='FC')
-# compressor2.compress()
-# compressor2.decompress()
+compressor2 = Compressor(filepath, method='FC')
+compressor2.compress()
+compressor2.decompress()
 
 
 compressor = Compressor(filepath, method='CM')
@@ -27,5 +27,9 @@ compressor.decompress()
 
 
 compressor2 = Compressor(filepath, method='FC', deletion= 'RESTART')
+compressor2.compress()
+compressor2.decompress()
+
+compressor2 = Compressor(filepath, method='FC', deletion= 'LRU')
 compressor2.compress()
 compressor2.decompress()
