@@ -109,7 +109,7 @@ class Compressor():
             self.string_set.add(value)
             return dictionary
         if deletion == 'FREEZE':
-            deletion_freeze()
+            return dictionary
         elif deletion == 'RESTART':
             print('=====Dictionary updated!======')
             dictionary = self.__init_dict('decode')

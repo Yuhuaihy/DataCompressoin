@@ -22,7 +22,7 @@ compressor2.decompress()
 
 compressor = Compressor(filepath, method='CM')
 compressor.compress()
-#compressor.export_compress_result()
+compressor.export_compress_result()
 compressor.decompress()
 
 
