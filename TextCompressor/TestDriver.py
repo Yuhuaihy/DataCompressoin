@@ -1,5 +1,6 @@
 from Compressor import Compressor
 filepath = 'testfiles/news.txt'
+filepath = 'testfiles/book1.txt'
 # compressor = Compressor(filepath, data='baaaabaaabc', method='CM')
 # compressor.compress()
 # compressor.decompress()
@@ -25,6 +26,9 @@ compressor.compress()
 compressor.export_compress_result()
 compressor.decompress()
 
+compressor2 = Compressor(filepath, method='FC', deletion= 'FREEZE')
+compressor2.compress()
+compressor2.decompress()
 
 compressor2 = Compressor(filepath, method='FC', deletion= 'RESTART')
 compressor2.compress()
@@ -33,3 +37,4 @@ compressor2.decompress()
 compressor2 = Compressor(filepath, method='FC', deletion= 'LRU')
 compressor2.compress()
 compressor2.decompress()
+compressor2.export_decompress_result()
