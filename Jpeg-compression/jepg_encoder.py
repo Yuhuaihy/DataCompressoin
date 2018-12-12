@@ -4,7 +4,7 @@ from IPython import embed
 class JpegEncode(object):
     def __init__(self,fname, block_size=8):
         self.image = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
-
+``
     def getLuminenceQuantizationMatrix(self,block_size, adjust = None):
         Q = np.array([[16, 11, 10, 16, 24, 40, 51, 61],
         [12, 12, 14, 19, 26, 58, 60, 55],
