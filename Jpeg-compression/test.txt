@@ -1,0 +1,58 @@
+#!/bin/sh
+if [ ! -d "gzip" ]; then
+    mkdir unix_compress
+    mkdir unix_compress/block_8
+    mkdir unix_compress/block_16
+    mkdir unix_decompress
+    mkdir unix_decompress/block_8
+    mkdir unix_decompress/block_16
+    mkdir ungzip
+    mkdir ungzip/block_8
+    mkdir ungzip/block_16
+    mkdir gzip
+    mkdir gzip/block_8
+    mkdir gzip/block_16
+    mkdir bzip2
+    mkdir bzip2/block_8
+    mkdir bzip2/block_16
+    mkdir unbzip2
+    mkdir unbzip2/block_8
+    mkdir unbzip2/block_16
+fi
+for file in Kodak/Kodak08gray.bmp Kodak/Kodak09gray.bmp Kodak/Kodak12gray.bmp Kodak/Kodak18gray.bmp Kodak/Kodak21gray.bmp Kodak/Kodak22gray.bmp
+do
+    for adjust in 0.05 0.2 1
+    do 
+        for block_size in 8 16
+        do
+        fname=${file:6:16}
+        echo $fname
+        np_name=$fname"_"$block_size"_"$adjust".npy"
+        decompress_path="unix_decompress/block_"$block_size"/"$block_size"_"$adjust"_"$fname
+        echo $decompress_path
+	    python3 jpeg_process.py $file $adjust $block_size $np_name $decompress_path
+        cp $decompress_path "ungzip/block_"$block_size"/"$block_size"_"$adjust"_"$fname
+        cp $decompress_path "unbzip2/block_"$block_size"/"$block_size"_"$adjust"_"$fname
+        bzip2 -k $np_name 
+        bzipname=$np_name".bz2"
+        mv $bzipname "bzip2/block_"$block_size"/"$bzipname
+        cp "bzip2/block_"$block_size"/"$bzipname "unbzip2/block_"$block_size"/"$bzipname
+        bunzip2 -k "unbzip2/block_"$block_size"/"$bzipname
+        gzipname=$np_name".gz"
+        gzip -k $np_name
+        mv $gzipname "gzip/block_"$block_size"/"$gzipname
+        cp "gzip/block_"$block_size"/"$gzipname "ungzip/block_"$block_size"/"$gzipname 
+        gunzip -k "ungzip/block_"$block_size"/"$gzipname
+        cp $np_name $np_name"_c"
+        compressname=$np_name".Z"
+        compress $np_name
+        mv $compressname "unix_compress/block_"$block_size"/"$compressname
+        cp "unix_compress/block_"$block_size"/"$compressname "unix_compress/block_"$block_size"/"$compressname"_C"
+        cp "unix_compress/block_"$block_size"/"$compressname "unix_decompress/block_"$block_size"/"$compressname
+        uncompress "unix_decompress/block_"$block_size"/"$compressname
+        echo "Check $file lossless portion for differences of bzip2:"; diff $np_name"_c" "unbzip2/block_"$block_size"/"$np_name 
+        echo "Check $file lossless portion for differences of gzip:"; diff $np_name"_c" "ungzip/block_"$block_size"/"$np_name 
+        echo "Check $file lossless portion for differences of unix compress:"; diff $np_name"_c" "unix_decompress/block_"$block_size"/"$np_name 
+        done
+    done	
+done
