@@ -1,4 +1,5 @@
 from Compressor import Compressor
+from IPython import embed
 filepath = 'testfiles/news.txt'
 filepath = 'testfiles/book1.txt'
 # compressor = Compressor(filepath, data='baaaabaaabc', method='CM')
@@ -12,6 +13,9 @@ filepath = 'testfiles/book1.txt'
 
 compressor = Compressor(filepath, method='CM')
 compressor.compress()
+result = compressor.compress_result
+
+embed()
 compressor.export_compress_result()
 compressor.decompress()
 
